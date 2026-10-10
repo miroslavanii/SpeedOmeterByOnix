@@ -1,0 +1,283 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Clean up any existing instance
+local oldGui = playerGui:FindFirstChild("SpeedGUI")
+if oldGui then oldGui:Destroy() end
+
+-- SCREEN GUI
+local SpeedGUI = Instance.new("ScreenGui")
+SpeedGUI.Name = "SpeedGUI"
+SpeedGUI.DisplayOrder = 1000
+SpeedGUI.IgnoreGuiInset = true
+SpeedGUI.ResetOnSpawn = false
+SpeedGUI.Parent = playerGui
+
+-- HELPER: TWEEN CREATION
+local function tween(obj, time, style, dir, props)
+    local info = TweenInfo.new(time, style or Enum.EasingStyle.Quad, dir or Enum.EasingDirection.Out)
+    local tw = TweenService:Create(obj, info, props)
+    tw:Play()
+    return tw
+end
+
+-- ================================================
+-- SMALL MINIMIZED FRAME
+-- ================================================
+local SmallerFrame = Instance.new("CanvasGroup")
+SmallerFrame.Name = "SmallerSpeedFrame"
+SmallerFrame.Size = UDim2.fromOffset(210, 46)
+SmallerFrame.Position = UDim2.new(0.05, 0, 0.9, -60)
+SmallerFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SmallerFrame.GroupTransparency = 0
+SmallerFrame.BorderSizePixel = 0
+SmallerFrame.Active = true
+SmallerFrame.Parent = SpeedGUI
+
+Instance.new("UICorner", SmallerFrame).CornerRadius = UDim.new(0, 8)
+
+local smallStroke = Instance.new("UIStroke")
+smallStroke.Color = Color3.fromRGB(45, 45, 45)
+smallStroke.Thickness = 1
+smallStroke.Parent = SmallerFrame
+
+local smallScale = Instance.new("UIScale")
+smallScale.Scale = 1
+smallScale.Parent = SmallerFrame
+
+local PlusButton = Instance.new("TextButton")
+PlusButton.Name = "PlusButton"
+PlusButton.Size = UDim2.fromOffset(36, 36)
+PlusButton.Position = UDim2.fromOffset(5, 5)
+PlusButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+PlusButton.TextColor3 = Color3.new(1, 1, 1)
+PlusButton.Text = "+"
+PlusButton.TextSize = 18
+PlusButton.Font = Enum.Font.GothamBold
+PlusButton.BorderSizePixel = 0
+PlusButton.Parent = SmallerFrame
+
+Instance.new("UICorner", PlusButton).CornerRadius = UDim.new(0, 6)
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Name = "SpeedLabel"
+SpeedLabel.Size = UDim2.new(1, -52, 1, 0)
+SpeedLabel.Position = UDim2.fromOffset(46, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
+SpeedLabel.Text = "Speed: 16"
+SpeedLabel.TextSize = 13
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Center
+SpeedLabel.Parent = SmallerFrame
+
+-- ================================================
+-- FULL EXPANDED FRAME
+-- ================================================
+local FullFrame = Instance.new("CanvasGroup")
+FullFrame.Name = "FullSpeedFrame"
+FullFrame.Size = UDim2.fromOffset(320, 185)
+FullFrame.Position = UDim2.new(0.05, 0, 0.5, -92)
+FullFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+FullFrame.GroupTransparency = 1
+FullFrame.Visible = false
+FullFrame.BorderSizePixel = 0
+FullFrame.Active = true
+FullFrame.Parent = SpeedGUI
+
+Instance.new("UICorner", FullFrame).CornerRadius = UDim.new(0, 10)
+
+local fullStroke = Instance.new("UIStroke")
+fullStroke.Color = Color3.fromRGB(45, 45, 45)
+fullStroke.Thickness = 1.5
+fullStroke.Parent = FullFrame
+
+local fullScale = Instance.new("UIScale")
+fullScale.Scale = 0.85
+fullScale.Parent = FullFrame
+
+-- Header Title Bar
+local Header = Instance.new("Frame")
+Header.Name = "Header"
+Header.Size = UDim2.new(1, 0, 0, 36)
+Header.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+Header.BorderSizePixel = 0
+Header.Parent = FullFrame
+
+local SetSpeedLabel = Instance.new("TextLabel")
+SetSpeedLabel.Name = "SetSpeedLabel"
+SetSpeedLabel.Size = UDim2.new(1, -40, 1, 0)
+SetSpeedLabel.Position = UDim2.fromOffset(12, 0)
+SetSpeedLabel.BackgroundTransparency = 1
+SetSpeedLabel.TextColor3 = Color3.new(1, 1, 1)
+SetSpeedLabel.Text = "Speed Control"
+SetSpeedLabel.TextSize = 14
+SetSpeedLabel.Font = Enum.Font.GothamBold
+SetSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SetSpeedLabel.Parent = Header
+
+local MinusButton = Instance.new("TextButton")
+MinusButton.Name = "MinusButton"
+MinusButton.Size = UDim2.fromOffset(28, 28)
+MinusButton.Position = UDim2.new(1, -32, 0, 4)
+MinusButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+MinusButton.TextColor3 = Color3.new(1, 1, 1)
+MinusButton.Text = "-"
+MinusButton.TextSize = 16
+MinusButton.Font = Enum.Font.GothamBold
+MinusButton.BorderSizePixel = 0
+MinusButton.Parent = Header
+
+Instance.new("UICorner", MinusButton).CornerRadius = UDim.new(0, 5)
+
+-- Text Input Field
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Name = "SpeedInput"
+SpeedInput.Size = UDim2.new(0.85, 0, 0, 38)
+SpeedInput.Position = UDim2.new(0.075, 0, 0.32, 0)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SpeedInput.TextColor3 = Color3.new(1, 1, 1)
+SpeedInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+SpeedInput.PlaceholderText = "Enter speed value..."
+SpeedInput.Text = ""
+SpeedInput.TextSize = 13
+SpeedInput.Font = Enum.Font.Gotham
+SpeedInput.ClearTextOnFocus = false
+SpeedInput.BorderSizePixel = 0
+SpeedInput.Parent = FullFrame
+
+Instance.new("UICorner", SpeedInput).CornerRadius = UDim.new(0, 6)
+
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = Color3.fromRGB(50, 50, 50)
+inputStroke.Thickness = 1
+inputStroke.Parent = SpeedInput
+
+-- Set Speed Button
+local SetSpeedButton = Instance.new("TextButton")
+SetSpeedButton.Name = "SetSpeedButton"
+SetSpeedButton.Size = UDim2.new(0.85, 0, 0, 36)
+SetSpeedButton.Position = UDim2.new(0.075, 0, 0.58, 0)
+SetSpeedButton.BackgroundColor3 = Color3.fromRGB(0, 140, 65)
+SetSpeedButton.TextColor3 = Color3.new(1, 1, 1)
+SetSpeedButton.Text = "Apply Speed"
+SetSpeedButton.TextSize = 13
+SetSpeedButton.Font = Enum.Font.GothamBold
+SetSpeedButton.BorderSizePixel = 0
+SetSpeedButton.Parent = FullFrame
+
+Instance.new("UICorner", SetSpeedButton).CornerRadius = UDim.new(0, 6)
+
+-- Credits Label
+local CreditLabel = Instance.new("TextLabel")
+CreditLabel.Name = "CreditLabel"
+CreditLabel.Size = UDim2.new(1, 0, 0, 20)
+CreditLabel.Position = UDim2.new(0, 0, 1, -22)
+CreditLabel.BackgroundTransparency = 1
+CreditLabel.TextColor3 = Color3.fromRGB(110, 110, 110)
+CreditLabel.Text = "Made by Onix"
+CreditLabel.TextSize = 10
+CreditLabel.Font = Enum.Font.Gotham
+CreditLabel.Parent = FullFrame
+
+-- ================================================
+-- ANIMATION & LOGIC TOGGLES
+-- ================================================
+local animating = false
+
+local function expandFullGUI()
+    if animating then return end
+    animating = true
+
+    -- Fade out small frame
+    tween(SmallerFrame, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In, {GroupTransparency = 1})
+    local twSmall = tween(smallScale, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In, {Scale = 0.85})
+    twSmall.Completed:Wait()
+    SmallerFrame.Visible = false
+
+    -- Fade in full frame
+    FullFrame.Visible = true
+    FullFrame.GroupTransparency = 1
+    fullScale.Scale = 0.85
+
+    tween(FullFrame, 0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {GroupTransparency = 0})
+    local twFull = tween(fullScale, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {Scale = 1})
+    twFull.Completed:Wait()
+
+    animating = false
+end
+
+local function collapseFullGUI()
+    if animating then return end
+    animating = true
+
+    -- Fade out full frame
+    tween(FullFrame, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In, {GroupTransparency = 1})
+    local twFull = tween(fullScale, 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In, {Scale = 0.85})
+    twFull.Completed:Wait()
+    FullFrame.Visible = false
+
+    -- Fade in small frame
+    SmallerFrame.Visible = true
+    SmallerFrame.GroupTransparency = 1
+    smallScale.Scale = 0.85
+
+    tween(SmallerFrame, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, {GroupTransparency = 0})
+    local twSmall = tween(smallScale, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {Scale = 1})
+    twSmall.Completed:Wait()
+
+    animating = false
+end
+
+-- BUTTON CONNECTIONS
+PlusButton.Activated:Connect(expandFullGUI)
+MinusButton.Activated:Connect(collapseFullGUI)
+
+SetSpeedButton.Activated:Connect(function()
+    local newSpeed = tonumber(SpeedInput.Text)
+    if newSpeed and player.Character then
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = newSpeed
+            SpeedLabel.Text = "Speed: " .. newSpeed
+
+            -- Button feedback animation
+            tween(SetSpeedButton, 0.1, nil, nil, {BackgroundColor3 = Color3.fromRGB(0, 180, 80)})
+            task.wait(0.12)
+            tween(SetSpeedButton, 0.15, nil, nil, {BackgroundColor3 = Color3.fromRGB(0, 140, 65)})
+        end
+    else
+        warn("Invalid speed input")
+    end
+end)
+
+-- DRAGGABLE WINDOW
+local UserInputService = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = FullFrame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        FullFrame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
